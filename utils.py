@@ -18,6 +18,12 @@ def run_all_below(ev):
     display(Javascript('IPython.notebook.execute_cells_below()'))
 
 
+def nextall(ev):
+    """Select next cell and run all cells below."""
+    display(Javascript('var i = IPython.notebook.get_cell();\
+                       IPython.notebook.select(i+2);\
+                       IPython.notebook.execute_cells_below()'))
+
 class ExplorersSelection(object):
     """Browse path to search csv files."""
     def __init__(self, csvname ,explorers):
@@ -57,17 +63,24 @@ class ExplorersSelection(object):
 
         buttons = []
         for f in self.explorers:
-            button = widgets.Button(description=f, button_style='primary',
-                                    layout=widgets.Layout(min_width='70%', height='25px'))
-            button.on_click(on_click)
-            buttons.append(button)
-        box.children = tuple([widgets.HTML("<h4>%s</h4>" % (self._selected_explorer,))] + buttons)
+            if f == self._selected_explorer:
+                button = widgets.Button(description=f, button_style='warning',
+                                        layout=widgets.Layout(min_width='70%', height='25px'))
+                button.on_click(on_click)
+                buttons.append(button)
+            else:
+                button = widgets.Button(description=f, button_style='primary',
+                                        layout=widgets.Layout(min_width='70%', height='25px'))
+                button.on_click(on_click)
+                buttons.append(button)
+        #box.children = tuple([widgets.HTML("<h4>%s</h4>" % (self._selected_explorer,))] + buttons)
+        box.children = buttons
 
 
 def human_size(nbytes):
-    """Just a function to change sizes to human readable for return values."""
+    """Just a function to change sizes from MB to more readable for return values."""
 
-    suffixes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB']
+    suffixes = ['MB', 'GB', 'TB', 'PB']
     i = 0
     while nbytes >= 1024 and i < len(suffixes)-1:
         nbytes /= 1024.
